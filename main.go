@@ -57,7 +57,7 @@ func play(input ArenaUpdate) (response string) {
 	}
 	playerState := input.Arena.State[input.Links.Self.Href]
 	arenaMap[playerState.X][playerState.Y] = ""
-	if cords := canBeShot(playerState, arenaMap); cords != nil {
+	if cords := canBeShot(playerState, arenaMap, &input); cords != nil {
 		return run(playerState, cords)
 	}
 	if canShoot(playerState, arenaMap) {
@@ -95,30 +95,42 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 	return false
 }
 
-func canBeShot(playerState PlayerState, arenaMap [][]string) []int {
+func canBeShot(playerState PlayerState, arenaMap [][]string, arenaUpdate *ArenaUpdate) []int {
 	areaWidth := len(arenaMap)-1
 	arenaHeight := len(arenaMap[0])-1
 	cords := make([]int, 2)
 	for i := 1; i < 4; i++ {
 		if x := clamp(playerState.X-i, 0, areaWidth); arenaMap[x][playerState.Y] != "" {
-			cords[0] = x
-			cords[1] = playerState.Y
-			return cords
+			enemy := arenaMap[x][playerState.Y]
+			if arenaUpdate.Arena.State[enemy].Direction == "E" {
+				cords[0] = x
+				cords[1] = playerState.Y
+				return cords
+			}
 		}
 		if x := clamp(playerState.X+i, 0, areaWidth); arenaMap[x][playerState.Y] != "" {
-			cords[0] = x
-			cords[1] = playerState.Y
-			return cords
+			enemy := arenaMap[x][playerState.Y]
+			if arenaUpdate.Arena.State[enemy].Direction == "W" {
+				cords[0] = x
+				cords[1] = playerState.Y
+				return cords
+			}
 		}
 		if y := clamp(playerState.Y-i, 0, arenaHeight); arenaMap[playerState.X][y] != "" {
-			cords[0] = playerState.X
-			cords[1] = y
-			return cords
+			enemy := arenaMap[playerState.X][y]
+			if arenaUpdate.Arena.State[enemy].Direction == "S" {
+				cords[0] = playerState.X
+				cords[1] = y
+				return cords
+			}
 		}
 		if y := clamp(playerState.Y+i, 0, arenaHeight); arenaMap[playerState.X][y] != "" {
-			cords[0] = playerState.X
-			cords[1] = y
-			return cords
+			enemy := arenaMap[playerState.X][y]
+			if arenaUpdate.Arena.State[enemy].Direction == "N" {
+				cords[0] = playerState.X
+				cords[1] = y
+				return cords
+			}
 		}
 	}
 	return nil

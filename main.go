@@ -156,7 +156,31 @@ func nextMove(playerState PlayerState, arenaDimensions []int) string {
 	} else if playerState.Y-moveMargin >= arenaDimensions[1] && playerState.Direction == "S" {
 		move = rotateDirection
 	} else if previousMoves[0] == "F" {
-		if previousMoves[1] == "L" {
+		if playerState.X <= moveMargin {
+			if playerState.Direction == "S" {
+				move = "L"
+			} else if playerState.Direction == "N" {
+				move = "R"
+			}
+		} else if playerState.X >= arenaDimensions[0]-moveMargin {
+			if playerState.Direction == "S" {
+				move = "R"
+			} else if playerState.Direction == "N" {
+				move = "L"
+			}
+		} else if playerState.Y <= moveMargin {
+			if playerState.Direction == "W" {
+				move = "L"
+			} else if playerState.Direction == "E" {
+				move = "R"
+			}
+		} else if playerState.Y >= arenaDimensions[1]-moveMargin {
+			if playerState.Direction == "W" {
+				move = "R"
+			} else if playerState.Direction == "E" {
+				move = "L"
+			}
+		} else if previousMoves[1] == "L" {
 			move = "R"
 		} else {
 			move = "L"

@@ -224,5 +224,5 @@ func clamp(number int, min int, max int) int {
 
 const (
 	rotateDirection = "L"
-	moveMargin      = 1
+	moveMargin      = 0
 )

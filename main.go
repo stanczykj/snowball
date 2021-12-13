@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 )
@@ -64,7 +65,13 @@ func play(input ArenaUpdate) (response string) {
 		return "T"
 	}
 
-	return nextMove(playerState, input.Arena.Dimensions)
+	nextMove := nextMove(playerState, input.Arena.Dimensions)
+	if r := recover(); r != nil {
+		moves := [3]string{"L", "R", "F"}
+		randomIndex := rand.Intn(len(moves))
+		return moves[randomIndex]
+	}
+	return nextMove
 }
 
 func canShoot(playerState PlayerState, arenaMap [][]string) bool {

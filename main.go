@@ -103,6 +103,9 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 }
 
 func canBeShot(playerState PlayerState, arenaMap [][]string, arenaUpdate *ArenaUpdate) []int {
+	if playerState.WasHit != true {
+		return nil
+	}
 	areaWidth := len(arenaMap) - 1
 	arenaHeight := len(arenaMap[0]) - 1
 	cords := make([]int, 2)

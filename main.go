@@ -57,9 +57,9 @@ func play(input ArenaUpdate) (response string) {
 	}
 	playerState := input.Arena.State[input.Links.Self.Href]
 	arenaMap[playerState.X][playerState.Y] = ""
-	if cords := canBeShot(playerState, arenaMap); cords != nil {
-		return run(playerState, cords)
-	}
+	// if cords := canBeShot(playerState, arenaMap); cords != nil {
+	// 	return run(playerState, cords)
+	// }
 	if canShoot(playerState, arenaMap) {
 		return "T"
 	}
@@ -74,7 +74,7 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 			change = 1
 		}
 		for i := 1; i < 4; i++ {
-			y := clamp(playerState.Y+(i*change), 0, len(arenaMap[0]))
+			y := clamp(playerState.Y+(i*change), 0, len(arenaMap[0])-1)
 			if arenaMap[playerState.X][y] != "" {
 				return true
 			}
@@ -86,7 +86,7 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 			change = 1
 		}
 		for i := 1; i < 4; i++ {
-			x := clamp(playerState.X+(i*change), 0, len(arenaMap))
+			x := clamp(playerState.X+(i*change), 0, len(arenaMap)-1)
 			if arenaMap[x][playerState.Y] != "" {
 				return true
 			}
@@ -96,17 +96,20 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 }
 
 func canBeShot(playerState PlayerState, arenaMap [][]string) []int {
+	areaWidth := len(arenaMap)-1
+	arenaHeight := len(arenaMap[0])-1
+
 	for i := 1; i < 4; i++ {
-		if arenaMap[playerState.X-i][playerState.Y] != "" {
+		if arenaMap[clamp(playerState.X-i, 0, areaWidth)][playerState.Y] != "" {
 			return nil
 		}
-		if arenaMap[playerState.X+i][playerState.Y] != "" {
+		if arenaMap[clamp(playerState.X+i, 0, areaWidth)][playerState.Y] != "" {
 			return nil
 		}
-		if arenaMap[playerState.X][playerState.Y-i] != "" {
+		if arenaMap[playerState.X][clamp(playerState.Y-i, 0, arenaHeight)] != "" {
 			return nil
 		}
-		if arenaMap[playerState.X][playerState.Y+i] != "" {
+		if arenaMap[playerState.X][clamp(playerState.Y+i, 0, arenaHeight)] != "" {
 			return nil
 		}
 	}

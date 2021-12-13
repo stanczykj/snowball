@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 )
@@ -30,9 +29,7 @@ func main() {
 func handler(w http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
-			moves := [3]string{"L", "R", "F"}
-			randomIndex := rand.Intn(len(moves))
-			fmt.Fprint(w, moves[randomIndex])
+			fmt.Fprint(w, "T")
 		}
 	}()
 

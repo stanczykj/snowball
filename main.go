@@ -59,7 +59,7 @@ func play(input ArenaUpdate) (response string) {
 	playerState := input.Arena.State[input.Links.Self.Href]
 	arenaMap[playerState.X][playerState.Y] = ""
 	if cords := canBeShot(playerState, arenaMap, &input); cords != nil {
-		return run(playerState, cords)
+		return run(playerState, cords, arenaMap)
 	}
 	if canShoot(playerState, arenaMap) {
 		return "T"
@@ -103,8 +103,8 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 }
 
 func canBeShot(playerState PlayerState, arenaMap [][]string, arenaUpdate *ArenaUpdate) []int {
-	areaWidth := len(arenaMap)-1
-	arenaHeight := len(arenaMap[0])-1
+	areaWidth := len(arenaMap) - 1
+	arenaHeight := len(arenaMap[0]) - 1
 	cords := make([]int, 2)
 	for i := 1; i < 4; i++ {
 		if x := clamp(playerState.X-i, 0, areaWidth); arenaMap[x][playerState.Y] != "" {
@@ -167,17 +167,37 @@ func nextMove(playerState PlayerState, arenaDimensions []int) string {
 	return move
 }
 
-func run(playerState PlayerState, attackerCoords []int) string {
+func run(playerState PlayerState, attackerCoords []int, arenaMap [][]string) string {
 	var move string
 	if attackerCoords[0] == playerState.X {
 		if playerState.Direction == "W" || playerState.Direction == "E" {
-			move = "F"
+			var newX int
+			if playerState.Direction == "W" {
+				newX = clamp(playerState.X-1, 0, len(arenaMap))
+			} else {
+				newX = clamp(playerState.X+1, 0, len(arenaMap))
+			}
+			if arenaMap[newX][playerState.Y] == "" {
+				move = "F"
+			} else {
+				move = rotateDirection
+			}
 		} else {
 			move = rotateDirection
 		}
 	} else if attackerCoords[1] == playerState.Y {
 		if playerState.Direction == "S" || playerState.Direction == "N" {
-			move = "F"
+			var newY int
+			if playerState.Direction == "S" {
+				newY = clamp(playerState.Y+1, 0, len(arenaMap[0]))
+			} else {
+				newY = clamp(playerState.Y-1, 0, len(arenaMap[0]))
+			}
+			if arenaMap[playerState.X][newY] == "" {
+				move = "F"
+			} else {
+				move = rotateDirection
+			}
 		} else {
 			move = rotateDirection
 		}

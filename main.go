@@ -28,6 +28,14 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, req *http.Request) {
+	defer func() {
+		if r := recover(); r != nil {
+			moves := [3]string{"L", "R", "F"}
+			randomIndex := rand.Intn(len(moves))
+			fmt.Fprint(w, moves[randomIndex])
+		}
+	}()
+
 	if req.Method == http.MethodGet {
 		fmt.Fprint(w, "Let the battle begin!")
 		return
@@ -65,13 +73,7 @@ func play(input ArenaUpdate) (response string) {
 		return "T"
 	}
 
-	nextMove := nextMove(playerState, input.Arena.Dimensions)
-	if r := recover(); r != nil {
-		moves := [3]string{"L", "R", "F"}
-		randomIndex := rand.Intn(len(moves))
-		return moves[randomIndex]
-	}
-	return nextMove
+	return nextMove(playerState, input.Arena.Dimensions)
 }
 
 func canShoot(playerState PlayerState, arenaMap [][]string) bool {
@@ -103,7 +105,7 @@ func canShoot(playerState PlayerState, arenaMap [][]string) bool {
 }
 
 func canBeShot(playerState PlayerState, arenaMap [][]string, arenaUpdate *ArenaUpdate) []int {
-	if playerState.WasHit != true {
+	if !playerState.WasHit {
 		return nil
 	}
 	areaWidth := len(arenaMap) - 1
